@@ -1,0 +1,109 @@
+##############################
+# NAMESPACE file for fractal #
+##############################
+
+###
+# Imports
+###
+
+importFrom(scatterplot3d, scatterplot3d)
+importFrom(sapa, SDF, taper, ACVS)
+import(ifultools,splus2R,wmtsa)
+
+###
+# S3 Generics
+###
+
+export(eda.plot)
+
+###
+# R/sysdata.rda Data
+##
+
+export(beamchaos)
+export(ecgrr)
+export(eegduke)
+export(lorenz)
+export(pd5si)
+
+###
+# S3 Functions
+###
+
+export(DFA)
+export(FDSimulate)
+export(FDWhittle)
+export(FNN)
+export(FNS)
+export(HDEst)
+export(KDE)
+export(RoverS)
+export(chaoticInvariant)
+export(corrDim)
+export(determinism)
+export(dispersion)
+export(embedSeries)
+export(findNeighbors)
+export(fractalBlock)
+export(henon)
+export(hurstACVF)
+export(hurstBlock)
+export(hurstSpec)
+export(infoDim)
+export(lmACF)
+export(lmConfidence)
+export(lmConvert)
+export(lmModel)
+export(lmSDF)
+export(lmSimulate)
+export(localProjection)
+export(lorenz.ode)
+export(lyapunov)
+export(medianFilter)
+export(plot.KDE)
+export(poincareMap)
+export(print.KDE)
+export(spaceTime)
+export(stationarity)
+export(surrogate)
+export(timeLag)
+
+###
+# Exported S3 Methods
+###
+
+S3method("[", embedSeries)
+S3method(as.list, stationarity)
+S3method(as.matrix, embedSeries)
+S3method(as.matrix, spaceTime)
+S3method(eda.plot, KDE)
+S3method(eda.plot, chaoticInvariant)
+S3method(eda.plot, determinism)
+S3method(eda.plot, fractalBlock)
+S3method(eda.plot, spaceTime)
+S3method(eda.plot, surrogate)
+S3method(plot, FDSimulate)
+S3method(plot, FNN)
+S3method(plot, chaoticInvariant)
+S3method(plot, determinism)
+S3method(plot, embedSeries)
+S3method(plot, fractalBlock)
+S3method(plot, lyapunov)
+S3method(plot, spaceTime)
+S3method(plot, surrogate)
+S3method(print, FDSimulate)
+S3method(print, FNN)
+S3method(print, chaoticInvariant)
+S3method(print, determinism)
+S3method(print, embedSeries)
+S3method(print, fractalBlock)
+S3method(print, lyapunov)
+S3method(print, spaceTime)
+S3method(print, stationarity)
+S3method(print, summary.chaoticInvariant)
+S3method(print, summary.lyapunov)
+S3method(print, summary.stationarity)
+S3method(print, surrogate)
+S3method(summary, determinism)
+S3method(summary, lyapunov)
+S3method(summary, stationarity)

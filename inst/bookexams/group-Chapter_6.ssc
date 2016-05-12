@@ -1,0 +1,38 @@
+# Continuous wavelet transform of the ecgrr series 
+rr.cwt <- wavCWT(ecgrr)
+plot(rr.cwt, series=T)
+
+# WTMM tree of CWT(ecgrr) 
+rr.tree <- wtmmTree(rr.cwt)
+plot(rr.tree[1:50])
+
+# Holder spectrum estimate for the ecgrr series 
+rr.holder <- holderSpectrum(rr.tree)
+par(mfrow=c(2,1))
+plot(ecgrr)
+plot(rr.holder$time, rr.holder$exponent,type="s", xlab="Beats",ylab="Holder exponent")
+par(mfrow=c(1,1))
+
+# WTMM tree plot for ecgrr series 
+plot(rr.tree[6:9], fit=T)
+
+# MODWT shrinkage using various threshold scales 
+x <- as.vector(beamchaos)
+tt <- seq(along=beamchaos)
+sd.noise <- 2
+xnoise   <- x + rnorm(length(beamchaos), sd=sd.noise)
+thresh <- seq(0.5,2,length=4)
+ws <- lapply(thresh, function(k,xnoise)    wavShrink(xnoise, wavelet="s8",      shrink.fun="hard", thresh.fun="universal",      thresh.scale=k, xform="modwt"),    xnoise=xnoise)
+stackPlot(x=tt, y=data.frame(x, xnoise, ws),    ylab=c("original","original + noise", thresh),    xlab="Normalized Time")
+
+# DWT shrinkage using various threshold functions 
+threshfuns <- c("universal", "minimax", "adaptive")
+ws <- lapply(threshfuns, function(k,xnoise)    wavShrink(xnoise, wavelet="s8",      thresh.fun=k, xform="dwt"),    xnoise=xnoise)
+stackPlot(x=tt, y=data.frame(x, xnoise, ws), ylab=c("original","original + noise", threshfuns), xlab="Normalized Time")
+
+# Add noise to the X state of the Lorenz system 
+x      <- lorenz[seq(3000),1]
+x      <- x - mean(x)
+sigma  <- stdev(x)
+xnoise <- x + rnorm(length(x)) * sigma / 3
+

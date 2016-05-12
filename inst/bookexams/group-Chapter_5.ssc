@@ -1,0 +1,74 @@
+# Plot of beamchaos series 
+plot(beamchaos)
+
+# eda.plot of surrogate data of beamchsos series 
+surr <- surrogate(beamchaos)
+eda.plot(surr)
+
+# Space-time separation plot of the beamchaos series 
+z <- spaceTime(beamchaos, dim=3, tlag=10, olag.max=500, probability=1/10)
+print(z)
+plot(z)
+
+# Delta-epsilon test of the beamchaos series 
+beam.det <- determinism(beamchaos, olag=30, seed=20)
+print(beam.det)
+plot(beam.det)
+
+# Extended data analysis plot of a spaceTime object 
+eda.plot(beam.det)
+
+# Space-time plot for a Gaussian white noise realization. 
+set.seed(100)
+white.noise <- rnorm(2048)
+plot(spaceTime(white.noise))
+
+# Determinism test for a Gaussian white noise realization 
+white.det <- determinism(white.noise, olag=1, seed=20)
+plot(white.det)
+eda.plot(white.det)
+
+# Stackplot of a chaotic Lorenz variable and a random walk 
+lor <- lorenz[1:2048,1]
+set.seed(100)
+walk <- cumsum(rnorm(2048))
+stackPlot(x=seq(2048), y=list(lorenz=lor,walk=walk))
+
+# ACF for a chaotic Lorenz system variable and a simulated random walk 
+lor.acf <- acf(lor, lag=200, plot=F)
+walk.acf <- acf(walk, lag=200, plot=F)
+stackPlot(x=as.vector(lor.acf$lag),   y=list(lorenz=as.vector(lor.acf$acf),   walk=as.vector(walk.acf$acf)),   xlab="lag", main="ACF", ylim=c(0,1))
+
+# Time-space plots of chaotic Lorenz variable and random walk data 
+plot(spaceTime(lor, olag.max=300), grid=T)
+plot(spaceTime(walk, olag.max=300), grid=T)
+
+# Lorenz determinism test 
+lor.det <- determinism(lor, olag=35, seed=100)
+plot(lor.det)
+
+# Lorenz determinism test 
+walk.det <- determinism(walk, olag=50, seed=100)
+plot(walk.det)
+
+# Determinism test on the first difference of a chaotic Lorenz variable 
+plot(determinism(diff(lor),olag=35, seed=100))
+
+# Comparison of the first difference of a noise contaminated and uncontaminated 
+# chaotic Lorenz variable 
+set.seed(100)
+lor.noise <- lor + rnorm(2048)
+stackPlot(x=seq(2047),  y=list(lor=lor[-1], lor.noise=lor.noise[-1],  diff.lor=diff(lor), diff.noisy=diff(lor.noise),  "diff(WS(lor.noise))"=diff(wavShrink(lor.noise))))
+
+# determinism test of the first difference of a noise contaminated chaotic 
+# Lorenz variable 
+plot(determinism(diff(lor.noise), olag=1, seed=100))
+dlor.clean <- diff(wavShrink(lor.noise))
+plot(determinism(dlor.clean, olag=40, seed=100))
+
+# Determinism test for a waveshrunk and first-order differenced random walk 
+# series 
+ws.walk <- wavShrink(walk)
+walk.clean <- diff(ws.walk)
+plot(determinism(walk.clean, olag=8))
+

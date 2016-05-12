@@ -1,0 +1,259 @@
+# Plot gait stride intervals 
+plot(pd5si)
+
+# Sample ACF for gait stride intervals 
+park.acf <- acf(as.vector(pd5si), 25)
+
+# Periodogram plot of pd5si series 
+pgram.pd5si <- SDF(pd5si, method="direct")
+plot(pgram.pd5si, plot.mean=FALSE, xscale="log10", yscale="log10",type="p", pch=".")
+
+# Least squares regression of pd5si periodogram 
+fitcoef <- lsfit(log10(attr(pgram.pd5si,"frequency")[-1]), log10(pgram.pd5si[-1]))$coef
+print(fitcoef)
+abline(fitcoef)
+
+# ACF of Fractional Gaussian Noise 
+fgn <- lmModel(model="fgn", HG=0.675)
+fgn.acf <- lmACF(fgn, lag.max=25)
+plot(fgn.acf, reference.grid=F, plot.args=list(type="h"))
+
+# SDF of Fractional Gaussian Noise 
+fgn <- lmModel(model="fgn", HG=0.675, variance=variance(pd5si, unbiased=FALSE))
+fgn.sdf <- lmSDF(fgn, n.sample=245)
+plot(fgn.sdf, reference.grid=F, log.axes="xy")
+
+# Simulating Fractional Gaussian Noise 
+fgn.sim <- lmSimulate(fgn, n.sample=245, mean=mean(pd5si))
+plot(fgn.sim, reference.grid=F)
+
+# ACF of Pure Power Law 
+ppl <- lmModel(model="ppl", alpha=-0.35)
+ppl.acf <- lmACF(ppl, lag.max=25)
+plot(ppl.acf, reference.grid=F, plot.args=list(type="h"))
+
+# SDF of Pure Power Law 
+ppl <- lmModel(model="ppl", alpha=-0.35, variance=variance(pd5si, unbiased=FALSE))
+ppl.sdf <- lmSDF(ppl, n.sample=245)
+plot(ppl.sdf, reference.grid=F, log.axes="xy")
+
+# Simulation of Pure Power Law 
+ppl.sim <- lmSimulate(ppl, n.sample=245, mean=mean(pd5si))
+plot(ppl.sim, reference.grid=F)
+
+# ACF of a Fractionally Differenced Process 
+fdp <- lmModel(model="fdp", delta=0.175)
+fd.acf <- lmACF(fdp, lag.max=25)
+plot(fd.acf, reference.grid=F, plot.args=list(type="h"))
+
+# SDF of Fractionally Differenced Process 
+fdp <- lmModel(model="fdp", delta=0.175, variance=variance(pd5si, unbiased=FALSE))
+fd.sdf <- lmSDF(fdp, n.sample=245)
+plot(fd.sdf, reference.grid=F, log.axes="xy")
+
+# Simulation of Fractionally Differenced Process 
+fdp <- lmModel(model="fdp", delta=0.175, variance=variance(pd5si, unbiased=FALSE))
+fd.sim <- lmSimulate(fdp, n.sample=245, mean=mean(pd5si))
+plot(fd.sim, reference.grid=F)
+
+# HG calculation 
+rho <- 0.2
+H <- 0.5 * logb(2*(1+rho),2)
+print(H)
+
+# 95 percent confidence interval width for Fractional Gaussian Noise 
+width.FGN <- 2*1.96/1024^{1-H}
+print(width.FGN)
+
+# AR interval width 
+width.AR <- 2*1.96*(1+rho)^0.5/((1-rho)*1024)^0.5
+width.AR
+width.AR/width.FGN
+
+# Actual rejection probability for incorrect AR model 
+2*pnorm(-1.96*width.AR/width.FGN)
+
+# Width of 0.95 confidence interval for pd5si data, white noise model 
+sd.Pd5si <- sqrt(variance(pd5si, unbiased=FALSE))
+2*1.96*sd.Pd5si/sqrt(245)
+
+# Width of 0.95 confidence interval for pd5si data, AR(1) model 
+phi <- acf(as.vector(pd5si))$acf[2]
+print(phi)
+2*1.96*sd.Pd5si*(1+phi)^0.5/((1-phi)*245)^0.5
+
+# Width of 0.95 confidence interval for pd5si data, FGN model 
+H <- 0.675
+2*1.96*sd.Pd5si/245^(1-H)
+
+# Multiplicative factor for FGN sample variance 
+1 - 1/c(1000, 10000)^(1-0.95)
+
+# Simulation of Pure Power Law 
+set.seed(100)
+ppl <- lmModel(model="ppl", alpha=-0.95)
+ppl.sim <- lmSimulate(ppl, n.sample=1024)
+ppl$variance
+variance(ppl.sim, unbiased=FALSE)
+
+# Mean confidence interval for Pure Power Law 
+lmConfidence(ppl.sim, ppl, conf.level=0.95, parm.known=T)
+
+# t-test for Pure Power Law simulation 
+t.test(ppl.sim@data)
+
+# Multiplicative sample variance factor, FGN model 
+1 - 1/245^(2-2*H)
+
+# Bias-corrected sample variance comparison for pd5si series 
+fgn <- lmModel(model="fgn", HG=0.675)
+fgn$variance
+variance(pd5si, unbiased=FALSE)
+
+# Width of 0.95 confidence interval for pd5si data 
+ci <- lmConfidence(pd5si, lmModel("fgn", HG=0.675), parm.known=T)
+print(ci)
+ci[2]-ci[1]
+
+# ECG R-R interval plot, normal sinus rhythm 
+plot(ecgrr)
+
+# Periodogram of ecgrr series 
+pgram.ecgrr <- SDF(ecgrr, method="direct")
+plot(pgram.ecgrr, plot.mean=FALSE, xscale="log10", yscale="log10",type="p", pch=".")
+fitcoef <- lsfit(log10(attr(pgram.ecgrr,"frequency")[-1]), log10(pgram.ecgrr[-1]))$coef
+print(fitcoef)
+abline(fitcoef)
+
+# SDF of DFBM 
+dfbm <- lmModel(model="dfbm", HB=0.1, var=variance(diff(ecgrr), unbiased=FALSE))
+dfbm.sdf <- lmSDF(dfbm, n.sample=1024)
+plot(dfbm.sdf, reference.grid=F, log.axes="xy")
+
+# Simulation of DFBM 
+dfbm.sim <- lmSimulate(dfbm, n.sample=1024)
+plot(dfbm.sim, reference.grid=F)
+
+# SDF of PPL modeling the ecgrr series 
+ppl <- lmModel(model="ppl", Cs=10^-4.488544, alpha=-1.226517)
+sdf.PPL <- lmSDF(ppl, n.sample=1024)
+plot(sdf.PPL, reference.grid=F, log.axes="xy", plot.args=list(type="o",pch="o",cex=0.5))
+
+# Simulation of Pure Power Law 
+ppl.stat <- lmModel("ppl", alpha=ppl$alpha + 2, variance=variance(diff(ecgrr), unbiased=FALSE))
+ppl.sim <- lmSimulate(ppl.stat, n.sample=1024)
+ppl.sim <- cumsum(ppl.sim)
+
+# SDF of FD process 
+fdp <- lmModel(model="fdp", delta=0.6, variance=variance(diff(ecgrr), unbiased=FALSE))
+fd.sdf <- lmSDF(fdp, n.sample=1024)
+plot(fd.sdf, reference.grid=F, log.axes="xy")
+
+# Simulation of FD process 
+fd.sim <- lmSimulate(fdp, n.sample=1024)
+plot(fd.sim, reference.grid=F)
+
+# Scaling exponent conversion, HG to delta 
+lmConvert(lmModel("fgn", HG=0.7), to="delta")
+
+# Scaling exponent conversion, HB to delta 
+lmConvert(lmModel("dfbm", HB=0.7), to="delta")
+lmConvert(lmModel("dfbm", HB=0.7), to="alpha")
+
+# Scaling exponent conversion, alpha to HG 
+lmConvert(lmModel("ppl", alpha=-0.5), to="HG")
+
+# Scaling exponent conversion, delta to beta 
+lmConvert(lmModel("fdp", delta=0.2), to="beta")
+
+# SDFs for FGN(0.99) and DFBM(0.01) 
+sdf.FGN <- lmSDF(lmModel("fgn",HG=0.99), n.sample=4096)
+sdf.DFBM <- lmSDF(lmModel("dfbm",HB=0.01), n.sample=4096)
+plot(sdf.DFBM, sdf.FGN, reference.grid=F, log.axes="xy")
+
+# SDF weights for simulation using Davies-Harte Method 
+Sj0.95 <- lmSimulate(lmModel("fgn", HG=0.95, variance=7), n.sample=750, generate.Sj=TRUE)
+
+# Simulation using Davies-Harte Method 
+FGN1 <- lmSimulate(Sj0.95)
+
+# Simulation of FGN via assigned spectral weights 
+FGN2 <- lmSimulate(Sj0.95)
+FGN3 <- lmSimulate(Sj0.95)
+
+# Plot FGN simulations 
+stackPlot(x=positions(FGN1)[], y=list(FGN1=FGN1,FGN2=FGN2,FGN3=FGN3))
+
+# Comparison of FDN simulation using two techniques 
+my.rns <- rnorm(2*1024)
+FGN5 <- lmSimulate(Sj0.95, rn=my.rns)
+FGN6 <- lmSimulate(lmModel("fgn", HG=0.95, var=7), n.sample=750, rn=my.rns)
+max(abs(FGN5-FGN6)@data)
+
+# Visual comparison of FGN and FD process simulations, H=0.675 
+fgn.sim <- lmSimulate(lmModel("fgn", HG=0.675, var=variance(pd5si, unbiased=FALSE)), n.sample=245, mean=mean(pd5si), rn=my.rns)
+plot(fgn.sim, reference.grid=F)
+
+# Visual comparison of FGN and FD process simulations, H=0.175 
+fd.sim <- lmSimulate(lmModel("fdp",delta=0.175, var=variance(pd5si, unbiased=FALSE)), n.sample=245, mean=mean(pd5si), rn=my.rns)
+plot(fd.sim, reference.grid=F)
+
+# Estimating the 97.5 percentage point for a RV 
+set.seed(100)
+N <- 245
+N.rep <- 100000
+qs <- quantile(rnorm(N.rep)*N^(rnorm(N.rep)*sqrt(6)/ (pi*sqrt(N))), c(0.025,0.975))
+print(qs)
+mean(abs(qs))
+
+# Mean confidence interval for pd5si series, H=0.675 
+lmConfidence(pd5si, lmModel("fgn", HG=0.675))
+
+# Plots of beamchaos and eegduke series 
+old.plt <- splitplot(2,1,1)
+plot(beamchaos)
+splitplot(2,1,2)
+plot(eegduke[500:1000])
+par(old.plt)
+
+# Forming delayed embeddings of beamchaos and eegduke series 
+emb.beam <- embedSeries(beamchaos, dim=10, tlag=10)
+emb.eeg  <- embedSeries(eegduke, dim=10, tlag=5)
+print(emb.beam)
+print(emb.eeg)
+
+# Plotting delayed embeddings of beamchaos and eegduke series 
+plot(emb.beam, dim=2, add=T)
+plot(emb.eeg, dim=2, add=T)
+
+# Multidimensional spin plot of beamchaos series embedding 
+plot(emb.beam)
+
+# Sample ACF of beamchaos and eegduke series 
+beam.acf <- acf(as.vector(beamchaos), 200)
+eeg.acf  <- acf(as.vector(eegduke), 50)
+
+# Periodogram estimates for beamchaos and eegduke series 
+beam.sdf <- SDF(beamchaos, npad=length(beamchaos))
+plot(beam.sdf, xscale="log10", yscale="log10", type="p", add=T)
+eeg.sdf  <- SDF(eegduke)
+plot(eeg.sdf, xscale="log10", yscale="log10", type="p", add=T)
+
+# Corelation dimension calculations, eegduke embedding 
+eeg.d2 <- corrDim(eegduke, dimension=10, olag=20, res=4)
+print(eeg.d2)
+
+# Correlation dimension of white noise embedding 
+set.seed(50)
+white.d2 <- corrDim(rnorm(2048), dim=10, tlag=20, olag=20, res=4)
+print(white.d2)
+
+# eda.plot of correlation dimension results for white noise embedding 
+eda.plot(white.d2)
+
+# Correlation dimension of eegduke series 
+eda.plot(corrDim(eegduke, dimension=10, olag=3, tlag=3))
+
+# Correlation dimension of beamchaos series 
+eda.plot(corrDim(beamchaos, dimension=10, olag=20, tlag=14))
+

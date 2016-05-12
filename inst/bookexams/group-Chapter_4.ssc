@@ -1,0 +1,102 @@
+# Lagged embedding of the counting numbers 
+y <- 1:10
+as.matrix(embedSeries(y, tlag=2, dim=3))
+
+# Stackplot of chaotic Lorenz system variables 
+lortime <- seq(length=numRows(lorenz),by=0.01)
+stackPlot(x=lortime, y=lorenz, xlab="TIME")
+
+# Comparison of a lagged embedding (top) using only the X variable of a chaotic 
+# Lorenz system to the embedding created by directly using the X and Y 
+# variables 
+x <- lorenz[,1]
+y <- lorenz[,2]
+z <- as.matrix(embedSeries(x, dim=2, tlag=10))
+M <- seq(3000)
+stackPlot(x=x[M],y=list("x[t + 10]"=z[M,2], "y[t]"=y[M]), xlab="x[t]")
+
+# Illustration of inappropriate time lags in a lagged embedding. The top and 
+# bottom plots illustrate the ill-effects of embedding the data using too 
+# small and too large of a time lag, respectively. 
+x <- lorenz[seq(3000),1]
+small <- embedSeries(x, dim=2, tlag=1) 
+large <- embedSeries(x, dim=2, tlag=300)
+ix <- seq(numRows(large))
+stackPlot(x=large[,1], y=list(small[ix,2], large[ix,2]), xlab="x[t]")
+
+# Time lag estimation using first zero crossing of ACF 
+as.integer(timeLag(lorenz[,1], method="acfzero"))
+
+# ACF-based time lag estimates for a chaotic Lorenz variable 
+as.integer(timeLag(lorenz[,1], method="acfnadir"))
+as.integer(timeLag(lorenz[,1], method="acfdecor"))
+
+# TDMI of Lorenz X variable 
+as.integer(timeLag(lorenz[seq(2000),1], method="mutual"))
+
+# Comparison of ACF anf TDMI time lag estimtate for the Lorenz X variable. 
+tlags <- c(254, 118, 31, 17)
+iy <- seq(2000)
+y <- data.frame(lapply(tlags,   function(i,iy) embedSeries(lorenz[,1], dim=2, tlag=i)[iy,2], iy=iy))
+names(y) <- paste(c(paste("ACF", c("Zero: x[t+",   "Nadir: x[t+", "1/e: x[t+")), "TDMI: x[t+"), tlags, "]", sep="")
+x <- lorenz[iy,1]
+stackPlot(x=x, y=y, xlab="x[t]")
+
+# FNN of Lorenz data 
+z <- FNN(lorenz[,1], dim=8, tlag=17)
+print(z)
+plot(z)
+
+# False Nearest Strands of the Lorenz X variable for an ensemble of atol values 
+atol <- seq(0.5,1,length=4)
+z <- lapply(atol, function(i, x, dim, tlag, olag) FNS(x, dim=dim, tlag=tlag, olag=olag, atol=i),  x=lorenz[,1], dim=8, tlag=17, olag=30)
+matplot(1:8, as.matrix(data.frame(z)), type="o", pch=1:4,  ylim=c(0,100), lty=1, xlab="DIMENSION", ylab="FNS %")
+ifelse1(is.R(),  legend("topleft", legend=paste("DIMENSION",1:4),   lty=rep(1,4), pch=1:4, col=1:4),  key(corner = c(0,1),   text = paste("DIMENSION",1:4),   lines = list(type = rep("o",4), pch=1:4, col=1:4)))
+
+# Various constant length segments in the Lorenz atrtactor 
+x <- lorenz[seq(3000),1]
+z <- embedSeries(x, dim=2, tlag=17)
+plot(z, cex=0.2, pch="o")
+olag <- 25
+refs <- c(51, 313, 1361, 1885, 575, 2671)
+for (i in seq(along=refs)){ 	ix <- refs[i] + seq(-olag, olag); 	lines(z[ix,], type="o", lwd=2, col=i + 1, pch=16); 	points(z[refs[i],], pch=16, cex=2, col=i + 1) }
+
+# Space-time separation plot of the Lorenz system 
+z <- spaceTime(lorenz[,1], dim=3, tlag=17)
+print(z)
+plot(z)
+
+# Extended data analysis plot of space-time data for the Lorenz system 
+eda.plot(z)
+
+# Correlation summation curves for the Lorenz system 
+d2 <- corrDim(lorenz[,1],dim=10,tlag=17,olag=40)
+print(d2)
+plot(d2)
+
+# Smoothed slope estimates of correlation summation curves 
+plot(d2, type="dstat")
+
+# Extended data analysis plot of Lorenz correlation dimension statistics 
+eda.plot(d2) 
+
+# Information dimension of the Lorenz system 
+d1 <- infoDim(lorenz[,1],dim=5,tlag=17,olag=40)
+print(d1)
+eda.plot(d1)
+plot(d1, type="entropy")
+plot(d2, type="entropy")
+
+# Compute the Lyapunov spectrum for the X variable of a chaotic Lorenz system 
+z <- lyapunov(lorenz[1:5000,1], sampling.interval=0.01, tlag=10, scale=2^(0:11), olag=40)
+print(z)
+
+# Plot the Lorenz Lyapunov spectrum 
+plot(z)
+
+# Summary of Lypapunov spectrum for Lorenz system 
+print(summary(z))
+
+# Calculating Lyapunov expansion for Lorenz system 
+data.frame(exp(rowSums(summary(z)$mean)))
+

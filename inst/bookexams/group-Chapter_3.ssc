@@ -1,0 +1,54 @@
+# Plot of fdp045 series 
+plot(fdp045, type="l")
+
+# Block-dependent unbiased weighted least squares FD model parameter estimation 
+wavFDPBlock(fdp045, lev=1:6, est="wlse", boundary="unbiased", edof=1)
+
+# Block-dependent biased weighted least squares FD model parameter estimation 
+wavFDPBlock(fdp045, lev=2:6, est="wlse", boundary="biased")
+
+# Block-dependent maximum likelihood estimation of a stationary FD process 
+wavFDPBlock(fdp045, lev=1:6, est="mle", boundary="stationary")
+
+# Block-dependent maximum likelihood estimation of a stationary-nonstationary FD 
+# process 
+wavFDPBlock(fdp045, lev=1:6, est="mle", boundary="nonstationary")
+
+# Biased instantaneous least squares FD model parameter estimates 
+wavFDPTime(fdp045, lev=1:6, est="lse", biased=T)
+
+# Unbiased instantaneous least squares FD model parameter estimates 
+lse.unbiased <- wavFDPTime(fdp045, lev=1:6, est="lse", biased=F)
+print(lse.unbiased)
+
+# Plot of the unbiased LSE results 
+plot(lse.unbiased)
+
+# Plot of the unbiased instantaneous LSE results with confidence intervals using 
+# a specified mean for delta 
+plot(lse.unbiased, mean.delta=0.45)
+
+# Using more DOFs to smooth out instantaneous FD estimates 
+dofs <- 0:3
+deltas <- lapply(dofs,function(i) wavFDPTime(fdp045, lev=1:6, est="lse", dof=i )$delta)
+names(deltas) <- paste(2*(dofs)+1,"DOF")
+stack.plot(deltas, same.scale=T, zeroline=T)
+
+# Summarizing the sample mean and variance of instantaneous least squares 
+# estimates of the FD parameter 
+lapply(deltas, function(x) mean(x,na.rm=T))
+lapply(deltas, function(x) variance(x, na.rm=TRUE))
+
+# Summarizing the sample mean and variance of instantaneous maximum likelihood 
+# estimates of the FD parameter 
+deltas <- lapply(dofs,function(i) wavFDPTime(fdp045, lev=1:6, est="mle", dof=i )$delta)
+names(deltas) <- paste(2*(dofs)+1,"DOF")
+lapply(deltas, function(x) mean(x,na.rm=T))
+lapply(deltas, function(x) variance(x, na.rm=TRUE))
+
+# Simulating a time varying FD process 
+delta <- c(rep(1/4,100),seq(1/4,5/6,len=40),rep(5/6,410), seq(5/6,0,len=100),seq(0,1/2,len=374))
+innov <- rep(1,length(delta))
+tvfd <- FDSimulate(delta=delta, innov=innov, seed=100)
+plot(tvfd)
+

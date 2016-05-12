@@ -1,0 +1,137 @@
+# Develop 8-tap Daubechies least asymmetric filters 
+s8 <- wavDaubechies("s8", norm=F)
+print(s8)
+
+# Unit energy check on wavelet filter 
+sum(s8$wavelet^2)
+
+# Plot various aspects of Daubechies filters 
+plot(wavDaubechies("s20", norm=F), type="time")
+plot(wavDaubechies("s20", norm=F), type="gain")
+plot(wavDaubechies("s20", norm=F), type="phase")
+
+# Create a linear chirp 
+linchirp <- make.signal("linchirp", n=1024)
+plot(linchirp, type="l", ylab="linchirp")
+
+# DWT of a linear chirp 
+dwt.linchirp <- wavDWT(linchirp, wavelet="s8", n.levels=4)
+print(dwt.linchirp)
+
+# Plot the DWT of a linear chirp 
+plot(dwt.linchirp)
+
+# Calculate energy of d4 crystal of DWT of linear chirp 
+sum(dwt.linchirp[["d4"]]^2)
+
+# Verify DWT energy preservation 
+sum(unlist(lapply(dwt.linchirp$data, function(x) sum(x^2))))
+sum(linchirp^2)
+
+# Summary method for DWT of linear chirp 
+summary(dwt.linchirp)
+
+# Energy plot of DWT crystals 
+plot(dwt.linchirp, type="energy")
+
+# Calculate squared gain function for Daubechies s8 filter 
+gain <- wavGain("s8", n.level=5)
+print(gain)
+
+# Plot squared gain function 
+plot(gain)
+
+# Shift DWT coefficients for approximate zero phase alignment 
+wavShift(dwt.linchirp)
+
+# Plot shifted DWT coefficient for linear chirp 
+plot(wavShift(dwt.linchirp))
+
+# Calculate DWT and MODWT circular shifts needed for approximate zero phase 
+# alignment 
+wavZeroPhase(wavelet="s8", levels=1:4)
+
+# Shift the DWT coefficients for a linear chirp to approximate zero phase 
+wavShift(dwt.linchirp)
+
+# Plot the shift the DWT coefficients for a linear chirp to approximate zero 
+# phase 
+plot(wavShift(dwt.linchirp))
+
+# Calculate the MODWT of a linear chirp 
+modwt.chirp <- wavMODWT(linchirp, wavelet="c12", n.levels=4)
+print(modwt.chirp)
+plot(wavShift(modwt.chirp))
+
+# Demonstrate energy preservation of the MODWT of a linear chirp 
+sum(linchirp^2) - sum(unlist(modwt.chirp$data)^2)
+
+# Demonstrate nearly exact MODWT synthesis 
+vecnorm(reconstruct(modwt.chirp) - linchirp@data)
+
+# MODWT synthesis after zeroing waveleyt coefficients in levels 2 and 4 
+modwt.chirp[c("d2","d4")] <- 0
+recon <- reconstruct(modwt.chirp)
+example <- list(linchirp=linchirp, synth=recon, diff=linchirp-recon)
+stack.plot(example)
+
+# DWPT of linear chirp 
+linchirp <- make.signal("linchirp", n=1024)
+dwpt.chirp <- wavDWPT(linchirp, n.levels=3)
+print(dwpt.chirp)
+plot(dwpt.chirp)
+
+# MODWT MRD of ECG data 
+modwt.ecg <- wavMODWT(ecg, wavelet="s8", n.levels=6)
+mrd.ecg <- wavMRD(modwt.ecg)
+print(mrd.ecg)
+plot(mrd.ecg)
+
+# Comparison of original and detrended ECG data 
+nobaseline <- apply(mrd.ecg[2:6,], MARGIN=1, sum)
+comparison <- list(ecg=ecg, detrend=nobaseline)
+stack.plot(comparison)
+
+# Verification of nearly exact synthesis of a MODWT MRD of an ECG data set 
+vecnorm(ecg@data - reconstruct(mrd.ecg))
+
+# DWT, DWPT, and MODWT of the atomclock data 
+x <- diff(as.vector(atomclock))
+x.dwt <- wavDWT(x, n.levels=3)
+x.dwpt <- wavDWPT(x, n.levels=3)
+x.modwt <- wavMODWT(x, n.levels=3)
+
+# Calculating DWT details 
+wavMRD(x.dwt)
+wavMRD(x.dwpt)
+
+# Plotting DWT and DWPT details 
+plot(wavMRD(x.dwt))
+plot(wavMRD(x.dwpt))
+
+# Plotting DWT details at a particular level 
+plot(wavMRD(x.dwt, level=3), show.sum=F)
+
+# Calculating MODWT details at a particular level and oscillation index 
+wavMRD(x.modwt, level=2, osc=1)
+
+# MODWT wavelet variance analysis of atomic clock data 
+var.clock <- wavVar(atomclock, n.levels=5)
+summary(var.clock)
+
+# Plot of atomic clock MODWT wavelet variance 
+plot(var.clock, type="unbiased", edof=c(1,3))
+
+# DWT-based wavelet variance estimated for atomic clock data 
+wavVar(atomclock, transform="dwt")
+
+# EDOF estimation for ocean series 
+edof <- wavEDOF(ocean)
+print(edof)
+
+# Confidence intervals for ocean series EDOF estimators 
+wavVarConfidence(edof$variance.unbiased, edof$EDOF1)
+
+# Homogeneity of wavelet variance test for the fdp045 series 
+wavVarTest(fdp045)
+
