@@ -11,6 +11,15 @@ importFrom(scatterplot3d, scatterplot3d)
 importFrom(sapa, SDF, taper, ACVS)
 import(ifultools,splus2R,wmtsa)
 
+importFrom("graphics", "abline", "axis", "barplot", "box", "boxplot",
+           "bxp", "contour", "hist", "legend", "lines", "matplot",
+           "mtext", "par", "persp", "points", "polygon", "strheight",
+           "strwidth", "text", "title")
+importFrom("methods", "as", "is")
+importFrom("stats", "acf", "approx", "coefficients", "deltat",
+           "density", "fft", "formula", "lm", "loess.smooth", "lsfit",
+           "optimize", "pchisq", "predict", "qnorm", "rnorm", "terms",
+           "time", "var")
 ###
 # S3 Generics
 ###
@@ -77,6 +86,8 @@ S3method("[", embedSeries)
 S3method(as.list, stationarity)
 S3method(as.matrix, embedSeries)
 S3method(as.matrix, spaceTime)
+S3method(plot, KDE)
+S3method(print, KDE)
 S3method(eda.plot, KDE)
 S3method(eda.plot, chaoticInvariant)
 S3method(eda.plot, determinism)

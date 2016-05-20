@@ -4,10 +4,11 @@ Version: 2.0-1
 Authors@R: c(person("William", "Constantine", email = "wlbconstan@gmail.com", role = c("cre", "aut")),
              person("Donald", "Percival", email = "dbp@apl.washington.edu", role = "aut"))
 Depends: R (>= 3.0.2), splus2R (>= 1.2-0), ifultools (>= 2.0-0)
-Imports: 
+Imports:
   sapa(>= 2.0-0), 
   wmtsa (>= 2.0-0),
   MASS,
+  methods,
   scatterplot3d
 Suggests: akima
 Description: Stochastic fractal and deterministic chaotic time series
@@ -17,3 +18,4 @@ Collate: fra_chaos.R fra_class.R fra_detm.R fra_dim.R fra_fdp.R
         fra_filt.R fra_hurst.R fra_kde.R fra_model.R fra_neig.R
         fra_stny.R fra_surr.R fra_pkg.R
 Repository: CRAN
+
