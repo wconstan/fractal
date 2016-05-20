@@ -6,6 +6,7 @@
 # Imports
 ###
 
+importFrom(MASS, lmsreg, ltsreg)
 importFrom(scatterplot3d, scatterplot3d)
 importFrom(sapa, SDF, taper, ACVS)
 import(ifultools,splus2R,wmtsa)
