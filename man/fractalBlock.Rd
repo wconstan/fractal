@@ -47,7 +47,7 @@ during the aggregation process.}
 
 \item{series}{a numeric vector containing the input series.}
 
-\item{logfit}{a linear regression model (such as that output by \code{lm}, \code{lmsreg}, or \code{ltsreg})
+\item{logfit}{a linear regression model (such as that output by \code{lm}, \code{lqs}, \code{lmsreg}, or \code{ltsreg})
 containing the regression model of the \code{log(scale)} versus \code{log(stat)} data.}
 \item{sdf}{spectral density function. Default: \code{NULL}.}
 }
