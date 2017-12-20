@@ -328,6 +328,9 @@
 "hurstBlock" <- function(x, method="aggAbs", scale.min=8, scale.max=NULL,
   scale.ratio=2, weight=function(x) rep(1,length(x)), fit=lm)
 {
+  # obtain series name
+  data.name <- deparse(substitute(x))
+    
   # convert input to signalSeries class
   x <- wmtsa::create.signalSeries(x)
 
@@ -335,9 +338,6 @@
   n.sample <- length(x)
   if (is.null(scale.max))
     scale.max <- n.sample
-
-  # obtain series name
-  data.name <- deparse(substitute(x))
 
   # check inputs
   checkScalarType(method, "character")

@@ -30,13 +30,15 @@
   checkScalarType(center,"logical")
   checkScalarType(recenter,"logical")
 
+  original_series_name <- deparse(substitute(x))
+      
   series <- asVector(x)
   storage.mode(series) <- "double"
 
   if (is(x,"signalSeries"))
     series.name <- x@title
   else
-    series.name <- deparse(substitute(x))
+    series.name <- original_series_name
 
   if (!is.numeric(x) && !is(x, "signalSeries"))
     stop ("Input data must be a time series")
