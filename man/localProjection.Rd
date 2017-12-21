@@ -85,9 +85,10 @@ Time Series Analysis}, Cambridge University Press.
 \code{\link{embedSeries}}, \code{\link{medianFilter}}, \code{\link{timeLag}}, \code{\link{FNN}}.}
 
 \examples{
-x      <- beamchaos@data
-x      <- x - mean(x)
-sigma  <- stdev(x)
+\dontrun{
+x <- beamchaos@data
+x <- x - mean(x)
+sigma <- stdev(x)
 xnoise <- x + rnorm(length(x)) * sigma / 3
 xclean <- localProjection(xnoise, dimension=7, noise.dimension=5,
     max.distance=3*sigma, n.neighbor=100)
@@ -96,6 +97,7 @@ y <- data.frame(xclean, xnoise, x)
 stackPlot(x=positions(beamchaos)[], y=y,
     ylab=c("denoised","noisy","original"),
     ylim=range(y))
+}
 }
 \keyword{univar}
 \keyword{models}

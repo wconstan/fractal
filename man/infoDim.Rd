@@ -158,6 +158,7 @@ Cambridge University Press.
 \code{\link{corrDim}}, \code{\link{embedSeries}}, \code{\link{timeLag}}, \code{\link{chaoticInvariant}}, \code{\link{lyapunov}}, \code{\link{poincareMap}}, \code{\link{spaceTime}}, \code{\link{findNeighbors}}, \code{\link{determinism}}.}
 
 \examples{
+\dontrun{
 ## calculate the information dimension estimates 
 ## for chaotic beam data using a delay 
 ## embedding for dimensions 1 through 10 
@@ -172,6 +173,7 @@ plot(beam.d1, fit=FALSE, legend=FALSE)
 
 ## plot an extended data analysis plot 
 eda.plot(beam.d1)
+}
 }
 \keyword{univar}
 \keyword{models}
