@@ -454,8 +454,8 @@
   checkScalarType(data.name,"character")
   checkScalarType(sum.order,"integer")
   checkVectorType(series,"numeric")
-  if (!is.null(logfit) && !is.element(class(logfit),c("lm","lms","lts")))
-    stop("logfit must be a member of class \"lm\", \"lms\", or \"ltsreg\"")
+  if (!is.null(logfit) && !is.element(class(logfit),c("lm","lqs","lms","lts")))
+    stop("logfit must be a member of class \"lm\", \"lqs\", \"lms\", or \"ltsreg\"")
   if (!is.null(overlap) && ((overlap < 0) | (overlap >= 1)))
     stop("Overlap factor must be in the range [0,1)")
   if (!is.null(sdf) && !is(sdf,"SDF"))
@@ -1103,3 +1103,4 @@
 "asVector" <- function(x) if (inherits(x, "signalSeries")) x@data else as.vector(x)
 
 "eda.plot" <- function (x, ...) UseMethod("eda.plot")
+
