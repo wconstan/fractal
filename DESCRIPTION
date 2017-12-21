@@ -1,6 +1,6 @@
 Package: fractal
 Title: A Fractal Time Series Modeling and Analysis Package
-Version: 2.0-3
+Version: 2.0-4
 Authors@R: c(person("William", "Constantine", email = "wlbconstan@gmail.com", role = c("cre", "aut")),
              person("Donald", "Percival", email = "dbp@apl.washington.edu", role = "aut"))
 Depends: R (>= 3.0.2), splus2R (>= 1.2-0), ifultools (>= 2.0-0)

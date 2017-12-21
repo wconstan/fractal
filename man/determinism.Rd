@@ -171,6 +171,7 @@ Physica D, \bold{73}, 38--48.
 \code{\link{embedSeries}}, \code{\link{timeLag}}, \code{\link{spaceTime}}, \code{\link{surrogate}}.}
 
 \examples{
+\dontrun{
 ## perform a determinism test for the beamchaos 
 ## series. in order to do so, it is vitally 
 ## important to provide the proper orbital lag, 
@@ -194,6 +195,7 @@ print(rnorm.det)
 plot(rnorm.det)
 
 eda.plot(rnorm.det)
+}
 }
 \keyword{univar}
 \keyword{models}
